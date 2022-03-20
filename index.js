@@ -27,6 +27,13 @@ let commands = [
     )
     .addStringOption((option) =>
       option.setName("password").setDescription("Password of PDF if required")
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("blank")
+        .setDescription(
+          "Select this option if the text is blank or font is mismatched"
+        )
     ),
 ];
 
@@ -41,7 +48,13 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName === "read") {
     let page = interaction.options.getInteger("page") || 1,
-      password = interaction.options.getString("password");
+      password = interaction.options.getString("password"),
+      dff = true,
+      usf = false;
+    if (interaction.options.getBoolean("blank") === true) {
+      dff = false;
+      usf = true;
+    }
     await interaction.deferReply({ ephemeral: true });
     try {
       let fileSizeRes = await fetch(
@@ -74,7 +87,7 @@ client.on("interactionCreate", async (interaction) => {
       });
       let arrayBuffer = await response.arrayBuffer();
       let pdfBuffer = Buffer.from(arrayBuffer);
-      let pageFile = await getPage(pdfBuffer, page, password);
+      let pageFile = await getPage(pdfBuffer, page, password, dff, usf);
       let totalPages = pageFile.totalPages;
       let components = new Discord.MessageActionRow().setComponents([
         new Discord.MessageButton()
@@ -128,7 +141,7 @@ client.on("interactionCreate", async (interaction) => {
             return i.reply("Uh-oh. You have reached the end of the pdf");
           }
           await i.deferUpdate();
-          let pageFile = await getPage(pdfBuffer, page, password);
+          let pageFile = await getPage(pdfBuffer, page, password, dff, usf);
           let attachment = new Discord.MessageAttachment(
             pageFile.content,
             "Page.png"
@@ -182,10 +195,10 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-async function getPage(pdfBuffer, page, password) {
+async function getPage(pdfBuffer, page, password, dff, usf) {
   let pages = await pdfToPng(pdfBuffer, {
-    disableFontFace: false,
-    useSystemFonts: true,
+    disableFontFace: dff,
+    useSystemFonts: usf,
     viewportScale: 2.0,
     pages: [page],
     pdfFilePassword: password,
