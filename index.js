@@ -40,9 +40,12 @@ client.on("interactionCreate", async (interaction) => {
     page = interaction.options.getInteger("page") || 1;
     await interaction.deferReply({ ephemeral: true });
     try {
-      let fileSizeRes = await fetch(interaction.options.getString("link"), {
-        method: "HEAD",
-      });
+      let fileSizeRes = await fetch(
+        interaction.options.getString("link").trim(),
+        {
+          method: "HEAD",
+        }
+      );
       let size = fileSizeRes.headers.get("content-length"),
         type = fileSizeRes.headers.get("content-type");
       if (size > 100 * 1e6)
@@ -59,7 +62,7 @@ client.on("interactionCreate", async (interaction) => {
         content: "Downloading... This might take a bit depending on the size",
         ephemeral: true,
       });
-      let res = await fetch(interaction.options.getString("link"));
+      let res = await fetch(interaction.options.getString("link").trim());
       let response = await res.blob();
       interaction.editReply({
         content: "Downloaded! Processing the PDF",
@@ -168,7 +171,9 @@ client.on("interactionCreate", async (interaction) => {
       }
     } catch (e) {
       console.log(e);
-      interaction.channel.send({ content: "Uh-oh, Unknown error" });
+      interaction.channel.send({
+        content: "Uh-oh, Unknown error " + e?.message,
+      });
     }
   }
 });
