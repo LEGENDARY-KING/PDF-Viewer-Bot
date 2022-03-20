@@ -24,6 +24,9 @@ let commands = [
         .setName("page")
         .setDescription("Page number of the PDF (Defaults to 1)")
         .setMinValue(0)
+    )
+    .addStringOption((option) =>
+      option.setName("password").setDescription("Password of PDF if required")
     ),
 ];
 
@@ -37,7 +40,8 @@ rest
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName === "read") {
-    page = interaction.options.getInteger("page") || 1;
+    let page = interaction.options.getInteger("page") || 1,
+      password = interaction.options.getString("password");
     await interaction.deferReply({ ephemeral: true });
     try {
       let fileSizeRes = await fetch(
@@ -70,7 +74,7 @@ client.on("interactionCreate", async (interaction) => {
       });
       let arrayBuffer = await response.arrayBuffer();
       let pdfBuffer = Buffer.from(arrayBuffer);
-      let pageFile = await getPage(pdfBuffer, page);
+      let pageFile = await getPage(pdfBuffer, page, password);
       let totalPages = pageFile.totalPages;
       let components = new Discord.MessageActionRow().setComponents([
         new Discord.MessageButton()
@@ -124,7 +128,7 @@ client.on("interactionCreate", async (interaction) => {
             return i.reply("Uh-oh. You have reached the end of the pdf");
           }
           await i.deferUpdate();
-          let pageFile = await getPage(pdfBuffer, page);
+          let pageFile = await getPage(pdfBuffer, page, password);
           let attachment = new Discord.MessageAttachment(
             pageFile.content,
             "Page.png"
@@ -178,12 +182,13 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-async function getPage(pdfBuffer, page) {
+async function getPage(pdfBuffer, page, password) {
   let pages = await pdfToPng(pdfBuffer, {
     disableFontFace: false,
     useSystemFonts: true,
     viewportScale: 2.0,
     pages: [page],
+    pdfFilePassword: password,
   });
   return pages[0];
 }
