@@ -1,0 +1,29 @@
+{
+  "name": "pdf-viewer-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LEGENDARY-KING/PDF-Viewer-Bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LEGENDARY-KING/PDF-Viewer-Bot/issues"
+  },
+  "homepage": "https://github.com/LEGENDARY-KING/PDF-Viewer-Bot#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "discord.js": "^13.6.0",
+    "pdf-to-png-converter": "^0.2.2",
+    "prettier": "^2.6.0"
+  },
+  "devDependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.26.1"
+  }
+}
