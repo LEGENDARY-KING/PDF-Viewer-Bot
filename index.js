@@ -122,7 +122,13 @@ client.on("interactionCreate", async (interaction) => {
           embeds: [embed],
           components: [components],
         });
-
+        interaction.followUp({
+          ephemeral: true,
+          content:
+            "Pshh, Is the PDF blank? Try using the command again with blank option set to true\n" +
+            interaction.toString() +
+            " blank: true",
+        });
         const filter = (i) => i.user.id === interaction.user.id;
         const collector = message.createMessageComponentCollector({
           filter,
