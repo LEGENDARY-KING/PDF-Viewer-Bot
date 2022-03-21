@@ -1,3 +1,5 @@
+Holy shit this got famous,,, the bot may be offline coz i see some security concerns and i need to rewrite the code, This code will be almost completely rewritten soon
+
 Read PDFs directly on discord. No hassle
 No need to download it and just forget where you downloaded it, Just enter the URL and boom the PDF is there.
 
