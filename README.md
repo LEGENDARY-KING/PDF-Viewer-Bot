@@ -16,6 +16,8 @@ To do list:
 3) Auto add a link to all files sent
 4) Add `enter page` button
 5) Add rotation options
+6) Make a queuing and 'thread' options so to process all the pages of PDF in background slowly and not crash the bot if someone inputs too big file
+
 
 This bot used a modified version of https://www.npmjs.com/package/pdf-to-png-converter
 
