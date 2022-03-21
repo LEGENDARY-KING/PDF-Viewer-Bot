@@ -1,4 +1,21 @@
-A discord bot to view PDFs directly in discord. No more downloading hundereds of PDF and forgetting you downloaded them!
+Read PDFs directly on discord. No hassle
+No need to download it and just forget where you downloaded it, Just enter the URL and boom the PDF is there.
+
+The command is
+
+`/read link: Link`
+
+The bot never stores the PDF, it downloads it and keeps it in cache until you are using the bot. The bot is open source so you can run your own instance!
+
+If the bot outputs a blank image then retry using the PDF with blank: true
+
+To do list:
+
+1) Add option to allow multiple users to use the file
+2) Add command to get all download links of a msg
+3) Auto add a link to all files sent
+4) Add `enter page` button
+5) Add rotation options
 
 This bot used a modified version of https://www.npmjs.com/package/pdf-to-png-converter
 
