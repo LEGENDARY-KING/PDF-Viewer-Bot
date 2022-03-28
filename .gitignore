@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 config.json
+
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal

@@ -1,0 +1,10 @@
+const { dbobj }= require("../helpers/database.js");
+const config  = require("../config.json");
+
+module.exports = {
+	name:"name",
+	description:"description",
+	async execute(message,args) {
+		//Magic
+	},
+};

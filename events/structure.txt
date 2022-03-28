@@ -1,0 +1,11 @@
+const { dbobj } = require("../helpers/database.js");
+const config = require("../config.json");
+
+module.exports = {
+	name: 'eventName(From https://discord.js.org/#/docs/main/stable/class/Client?scrollTo=e-apiRequest)',
+	once: boolean,
+	description: "Some Description",
+	execute(EventReturnTypes) {
+		//Magic
+	},
+};

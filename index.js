@@ -1,215 +1,85 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({
-  intents: [Discord.Intents.FLAGS.GUILDS],
+  intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
-const { clientId, guildId, token } = require("./config.json");
-const pdfToPng = require("pdf-to-png-converter").pdfToPng;
-const fetch = require("node-fetch");
+const discordModals = require("discord-modals");
+discordModals(client);
 
-let commands = [
-  new SlashCommandBuilder()
-    .setName("read")
-    .setDescription("Reads a pdf file from a link!")
-    .addStringOption((option) =>
-      option
-        .setName("link")
-        .setDescription("The link of the PDF")
-        .setRequired(true)
-    )
-    .addIntegerOption((option) =>
-      option
-        .setName("page")
-        .setDescription("Page number of the PDF (Defaults to 1)")
-        .setMinValue(0)
-    )
-    .addStringOption((option) =>
-      option.setName("password").setDescription("Password of PDF if required")
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("blank")
-        .setDescription(
-          "Select this option if the text is blank or font is mismatched"
-        )
-    ),
-];
+const { token } = require("./config.json");
+const fs = require("fs");
 
-const rest = new REST({ version: "9" }).setToken(token);
+const { exec } = require("child_process");
+// Registers the slash commands to the discord guild
 
-rest
-  .put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
-  .then(() => console.log("Successfully registered application commands."))
-  .catch(console.error);
-
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-  if (interaction.commandName === "read") {
-    let page = interaction.options.getInteger("page") || 1,
-      password = interaction.options.getString("password"),
-      dff = true,
-      usf = false;
-    if (interaction.options.getBoolean("blank") === true) {
-      dff = false;
-      usf = true;
-    }
-    await interaction.deferReply({ ephemeral: true });
-    try {
-      let fileSizeRes = await fetch(
-        interaction.options.getString("link").trim(),
-        {
-          method: "HEAD",
-        }
-      );
-      let size = fileSizeRes.headers.get("content-length"),
-        type = fileSizeRes.headers.get("content-type");
-      if (size > 100 * 1e6)
-        return interaction.editReply({
-          content: "File size too big. Limit 100 MBs",
-          ephemeral: true,
-        });
-      if (type !== "application/pdf")
-        return interaction.editReply({
-          content: "Link received not of a PDF file",
-          ephemeral: true,
-        });
-      interaction.editReply({
-        content: "Downloading... This might take a bit depending on the size",
-        ephemeral: true,
-      });
-      let res = await fetch(interaction.options.getString("link").trim());
-      let response = await res.blob();
-      interaction.editReply({
-        content: "Downloaded! Processing the PDF",
-        ephemeral: true,
-      });
-      let arrayBuffer = await response.arrayBuffer();
-      let pdfBuffer = Buffer.from(arrayBuffer);
-      let pageFile = await getPage(pdfBuffer, page, password, dff, usf);
-      let totalPages = pageFile.totalPages;
-      let components = new Discord.MessageActionRow().setComponents([
-        new Discord.MessageButton()
-          .setStyle("SUCCESS")
-          .setEmoji("◀")
-          .setCustomId("previous"),
-        new Discord.MessageButton()
-          .setStyle("SECONDARY")
-          .setDisabled(true)
-          .setLabel("Page " + page + "/" + pageFile.totalPages)
-          .setCustomId("."),
-        new Discord.MessageButton()
-          .setStyle("SUCCESS")
-          .setEmoji("▶")
-          .setCustomId("next"),
-        new Discord.MessageButton()
-          .setStyle("DANGER")
-          .setLabel("End")
-          .setCustomId("end"),
-      ]);
-      let attachment = new Discord.MessageAttachment(
-        pageFile.content,
-        "Page.png"
-      );
-      let embed = new Discord.MessageEmbed()
-        .setColor("#99ff00")
-        .setImage("attachment://Page.png")
-        .setFooter({ text: "Used by " + interaction.user.tag });
-      try {
-        let message = await interaction.channel.send({
-          files: [attachment],
-          embeds: [embed],
-          components: [components],
-        });
-        interaction.followUp({
-          ephemeral: true,
-          content:
-            "Pshh, Is the PDF blank? Try using the command again with blank option set to true\n" +
-            interaction.toString() +
-            " blank: true",
-        });
-        const filter = (i) => i.user.id === interaction.user.id;
-        const collector = message.createMessageComponentCollector({
-          filter,
-        });
-        collector.on("collect", async (i) => {
-          if (i.customId === "previous") page--;
-          if (i.customId === "next") page++;
-          if (i.customId === "end") {
-            collector.stop();
-            i.deferUpdate();
-            return;
-          }
-          if (page < 1 || page > totalPages) {
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-            return i.reply("Uh-oh. You have reached the end of the pdf");
-          }
-          await i.deferUpdate();
-          let pageFile = await getPage(pdfBuffer, page, password, dff, usf);
-          let attachment = new Discord.MessageAttachment(
-            pageFile.content,
-            "Page.png"
-          );
-          components.components[1].setLabel(
-            "Page " + page + "/" + pageFile.totalPages
-          );
-          await message.edit({
-            files: [attachment],
-            embeds: [embed],
-            components: [components],
-          });
-        });
-        collector.on("end", (collected) => {
-          let components2 = new Discord.MessageActionRow().setComponents([
-            new Discord.MessageButton()
-              .setDisabled(true)
-              .setStyle("SUCCESS")
-              .setEmoji("◀")
-              .setCustomId("previous"),
-            ,
-            new Discord.MessageButton()
-              .setStyle("SECONDARY")
-              .setDisabled(true)
-              .setLabel("Page " + page + "/" + pageFile.totalPages)
-              .setCustomId("."),
-            ,
-            new Discord.MessageButton()
-              .setDisabled(true)
-              .setStyle("SUCCESS")
-              .setEmoji("▶")
-              .setCustomId("next"),
-            ,
-          ]);
-          embed.setTitle("Will not reply anymore");
-          message.edit({ embeds: [embed], components: [components2] });
-        });
-      } catch (e) {
-        interaction.editReply({
-          content:
-            "I could not send the file. Please check if i have perms here",
-          ephemeral: true,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-      interaction.channel.send({
-        content: "Uh-oh, Unknown error " + e?.message,
-      });
-    }
+exec("node ./deploy-commands.js", (error, stdout, stderr) => {
+  if (error) {
+    console.log(`error: ${error.message}`);
+    return;
   }
+  if (stderr) {
+    console.log(`stderr: ${stderr}`);
+    return;
+  }
+  console.log(`stdout: ${stdout}`);
 });
 
-async function getPage(pdfBuffer, page, password, dff, usf) {
-  let pages = await pdfToPng(pdfBuffer, {
-    disableFontFace: dff,
-    useSystemFonts: usf,
-    viewportScale: 2.0,
-    pages: [page],
-    pdfFilePassword: password,
-  });
-  return pages[0];
+//Slash Commands
+client.slashCommands = new Discord.Collection();
+
+const slashCommandFiles = fs
+  .readdirSync("./slashCommands")
+  .filter((file) => file.endsWith(".js"));
+for (const file of slashCommandFiles) {
+  let command = require(`./slashCommands/${file}`);
+  // Set a new item in the Collection
+  // With the key as the command name and the value as the exported module
+  client.slashCommands.set(command.data.name, command);
+}
+//Text Commands
+
+client.textCommands = new Discord.Collection();
+
+const textCommandFiles = fs
+  .readdirSync("./textCommands")
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of textCommandFiles) {
+  let command = require(`./textCommands/${file}`);
+  // Set a new item in the Collection
+  // With the key as the command name and the value as the exported module
+  console.log(
+    `Registered Text Command ${command.name}: ${command.description}`
+  );
+  client.textCommands.set(command.name, command);
+}
+//Message Commands
+
+client.messageCommands = new Discord.Collection();
+
+const messageCommandsFiles = fs
+  .readdirSync("./messageCommands")
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of messageCommandsFiles) {
+  let command = require(`./messageCommands/${file}`);
+  // Set a new item in the Collection
+  // With the key as the command name and the value as the exported module
+  console.log(`Registered Text Command ${command.name}`);
+  client.messageCommands.set(command.name, command);
+}
+
+// Event Handling
+const eventFiles = fs
+  .readdirSync("./events")
+  .filter((file) => file.endsWith(".js"));
+for (const file of eventFiles) {
+  let event = require(`./events/${file}`);
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    console.log(`Registered Event ${event.name}: ${event.description}`);
+    client.on(event.name, (...args) => event.execute(...args));
+  }
 }
 
 client.login(token).then(() => {});
