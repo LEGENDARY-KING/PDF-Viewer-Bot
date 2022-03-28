@@ -13,12 +13,17 @@ If the bot outputs a blank image then retry using the PDF with blank: true
 
 To do list:
 
-1) Add option to allow multiple users to use the file
-2) Add command to get all download links of a msg
-3) Auto add a link to all files sent
-4) Add `enter page` button
-5) Add rotation options
-6) Make a queuing and 'thread' options so to process all the pages of PDF in background slowly and not crash the bot if someone inputs too big file
+~~1) Add option to allow multiple users to use the file~~ **Done!**
+
+~~2) Add command to get all download links of a msg~~ **Done!**
+
+~~3) Auto add a link to all files sent~~ **Replaced with message commands**
+
+~~4) Add `enter page` button~~ **Done!**
+
+~~5) Add rotation options~~ **Done!**
+
+~~6) Make a queuing and 'thread' options so to process all the pages of PDF in background slowly and not crash the bot if someone inputs too big file~~ **Nope not doing this**
 
 
 This bot used a modified version of https://www.npmjs.com/package/pdf-to-png-converter
