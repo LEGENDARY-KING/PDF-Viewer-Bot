@@ -35,13 +35,6 @@ module.exports = {
         .setDescription(
           "Select this option if the text is blank or font is mismatched"
         )
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("nocache")
-        .setDescription(
-          "Select this if u do not want bot to look for PDF in cache and download it again"
-        )
     ),
   async execute(interaction) {
     let page = interaction.options.getInteger("page") || 1,
