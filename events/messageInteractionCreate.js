@@ -3,7 +3,7 @@ module.exports = {
   description: "Manages all the slash commands initiation",
   once: false,
   async execute(interaction) {
-    if (!interaction.isApplicationCommand()) return;
+    if (!interaction.isApplicationCommand() && !interaction.isCommand()) return;
     let command = interaction.client.messageCommands.get(
       interaction.commandName
     );
