@@ -177,12 +177,6 @@ module.exports = {
             .setLabel("Custom Rotation")
             .setCustomId("custom"),
         ]),
-        new Discord.MessageActionRow().setComponents([
-          new Discord.MessageButton()
-            .setStyle("SECONDARY")
-            .setLabel("Open this PDF for you")
-            .setCustomId("open"),
-        ]),
       ];
       let attachment = new Discord.MessageAttachment(
         pageFile.content,
@@ -193,7 +187,7 @@ module.exports = {
         .setImage("attachment://Page.png")
         .setFooter({ text: "Used by " + interaction.user.tag });
       try {
-        let message = await interaction.channel.send({
+        let message = await interaction.user.send({
           files: [attachment],
           embeds: [embed],
           components: components,
@@ -201,22 +195,13 @@ module.exports = {
         await interaction.followUp({
           ephemeral: true,
           content:
-            "shh, is the PDF blank? Try using the command again with blank option",
+            "shh, is the PDF blank? Try using the command again with blank option\nCheck your DM for pdf",
         });
         const collector = message.createMessageComponentCollector();
         collector.on("collect", async (i) => {
-          if (i.customId === "open") {
-            i.options = interaction.options;
-            i.toString = () => {
-              return interaction.toString();
-            };
-            this.execute(i);
-            return;
-          }
           if (i.user.id !== interaction.user.id)
             return i.reply({
-              content:
-                "Shhh you arent allowed to manage this pdf, open your own by pressing the 'Open this PDF for you' button",
+              content: "Shhh you arent allowed to manage this pdf",
               ephemeral: true,
             });
           if (i.customId === "previous") page--;

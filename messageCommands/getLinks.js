@@ -46,10 +46,6 @@ module.exports = {
     let collector = m.createMessageComponentCollector({ time: 60000 });
     collector.on("collect", async (i) => {
       try {
-        let channel = await interaction.user.createDM();
-        i.channel.send = async (options) => {
-          return channel.send(options);
-        };
         i.options = {};
         i.options.getString = (id) => {
           if (id === "link") return allLinks[parseInt(i.customId)];
@@ -63,7 +59,7 @@ module.exports = {
         i.toString = () => {
           return "/read " + allLinks[parseInt(i.customId)];
         };
-        interaction.client.slashCommands.get("read").execute(i);
+        interaction.client.messageCommands.get("read").execute(i);
       } catch (e) {
         console.log(e);
         if (i.replied)
