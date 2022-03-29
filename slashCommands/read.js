@@ -136,7 +136,7 @@ module.exports = {
         data.file = pdfBuffer;
         dbobj.setCached.run(data);
       } else {
-        interaction.edit({ content: "Found PDF in cache! Processing", ephemeral: true });
+        interaction.editReply({ content: "Found PDF in cache! Processing", ephemeral: true });
         totalPages = data.totalPages;
         pdfBuffer = data.file;
         let tempData = bsplit(data.pages, Buffer.from(data.splitString));
