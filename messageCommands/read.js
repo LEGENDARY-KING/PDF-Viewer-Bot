@@ -118,7 +118,7 @@ module.exports = {
       } else {
         totalPages = data.totalPages;
         pdfBuffer = data.file;
-        i.edit({ content: "Found PDF in cache! Processing", ephemeral: true });
+        interaction.edit({ content: "Found PDF in cache! Processing", ephemeral: true });
         let tempData = bsplit(data.pages, Buffer.from(data.splitString));
         const chunkSize = 2;
         for (let i = 0; i < tempData.length; i += chunkSize) {
