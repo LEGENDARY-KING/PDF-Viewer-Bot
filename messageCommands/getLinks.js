@@ -34,11 +34,13 @@ module.exports = {
       );
     }
     let m = await interaction.reply({
-      content: attachments
-        .map((a) => {
-          return `/read link: ${a.url}`;
-        })
-        .join("\n"),
+      content:
+        "**Press on the button to open the PDF in your DM**\n" +
+        attachments
+          .map((a) => {
+            return `/read link: ${a.url}`;
+          })
+          .join("\n"),
       components: components,
       ephemeral: true,
       fetchReply: true,
