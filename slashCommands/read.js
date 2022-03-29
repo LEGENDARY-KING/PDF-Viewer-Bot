@@ -72,13 +72,15 @@ module.exports = {
             ephemeral: true,
           });
         await interaction.editReply({
-          content: "Downloading... This might take a bit depending on the  (If i get stuck here for more than 1 minute please reuse the command)",
+          content:
+            "Downloading... This might take a bit depending on the size (If i get stuck here for more than 1 minute please reuse the command)",
           ephemeral: true,
         });
         let res = await fetch(link);
         let response = await res.blob();
         await interaction.editReply({
-          content: "Downloaded! Processing the PDF (If i get stuck here for more than 1 minute please reuse the command)",
+          content:
+            "Downloaded! Processing the PDF (If i get stuck here for more than 1 minute please reuse the command)",
           ephemeral: true,
         });
         let arrayBuffer = await response.arrayBuffer();
@@ -228,6 +230,8 @@ module.exports = {
         const collector = message.createMessageComponentCollector();
         collector.on("collect", async (i) => {
           if (i.customId === "open") {
+            if (i.user.id === interaction.user.id)
+              return i.reply("This PDF is opened by you.");
             i.options = interaction.options;
             i.toString = () => {
               return interaction.toString();
