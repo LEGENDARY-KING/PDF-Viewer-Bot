@@ -13,7 +13,7 @@ const { Modal, TextInputComponent, showModal } = require("discord-modals"); // N
 module.exports = {
   name: "read",
   type: 3,
-  async execute(interaction, blank) {
+  async execute(interaction, blank, url) {
     let message = await interaction.channel.messages.fetch(
       interaction.targetId
     );
@@ -25,7 +25,7 @@ module.exports = {
       totalPages,
       totalPagesBuffer,
       pagesBufferArray = [],
-      link = message.attachments?.first()?.url?.trim(),
+      link = url || message.attachments?.first()?.url?.trim(),
       usf = false;
     if (blank === true) {
       dff = false;

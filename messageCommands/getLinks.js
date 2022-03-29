@@ -46,20 +46,12 @@ module.exports = {
     let collector = m.createMessageComponentCollector({ time: 60000 });
     collector.on("collect", async (i) => {
       try {
-        i.options = {};
-        i.options.getString = (id) => {
-          if (id === "link") return allLinks[parseInt(i.customId)];
-        };
-        i.options.getBoolean = () => {
-          return false;
-        };
-        i.options.getInteger = () => {
-          return 1;
-        };
         i.toString = () => {
           return "/read " + allLinks[parseInt(i.customId)];
         };
-        interaction.client.messageCommands.get("read").execute(i);
+        interaction.client.messageCommands
+          .get("read")
+          .execute(i, false, allLinks[parseInt(i.customId)]);
       } catch (e) {
         console.log(e);
         if (i.replied)
