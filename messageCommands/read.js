@@ -376,7 +376,8 @@ module.exports = {
         console.log(e);
         await interaction.editReply({
           content:
-            "I could not send the file. Please check if i have perms here",
+            "I could not send the file. Please check if i have perms here. Error message: " +
+            e.message,
           ephemeral: true,
         });
       }
