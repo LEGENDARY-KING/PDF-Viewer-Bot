@@ -231,7 +231,10 @@ module.exports = {
         collector.on("collect", async (i) => {
           if (i.customId === "open") {
             if (i.user.id === interaction.user.id)
-              return i.reply("This PDF is opened by you.");
+              return i.reply({
+                content: "This PDF is opened by you.",
+                ephemeral: true,
+              });
             i.options = interaction.options;
             i.toString = () => {
               return interaction.toString();
