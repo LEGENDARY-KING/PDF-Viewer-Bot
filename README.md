@@ -7,7 +7,7 @@ The command is
 
 `/read link: Link`
 
-The bot never stores the PDF, it downloads it and keeps it in cache until you are using the bot. The bot is open source so you can run your own instance!
+The bot stores the PDF in the cache till weekend. It resets the cache every sunday. The bot is open source so you can run your own instance if you have any privacy concerns!
 
 If the bot outputs a blank image then retry using the PDF with blank: true
 
