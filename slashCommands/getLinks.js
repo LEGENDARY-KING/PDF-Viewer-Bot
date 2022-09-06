@@ -68,7 +68,7 @@ module.exports = {
     }
     let m = await interaction.reply({
       content:
-        "**Press on the button to open the PDF in your DM**\n" +
+        "**Press on the button to open the PDF**\n" +
         attachments
           .map((a) => {
             return `/read link: ${a.url}`;
@@ -80,10 +80,6 @@ module.exports = {
     let collector = m.createMessageComponentCollector({ time: 60000 });
     collector.on("collect", async (i) => {
       try {
-        let channel = await interaction.user.createDM();
-        i.channel.send = async (options) => {
-          return channel.send(options);
-        };
         i.options = {};
         i.options.getString = (id) => {
           if (id === "link") return allLinks[parseInt(i.customId)];
