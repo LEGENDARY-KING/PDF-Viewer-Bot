@@ -70,10 +70,10 @@ module.exports = {
         pagesBufferArray.push({ buffer: pageFile.content, page: page });
         totalPages = pageFile.totalPages;
         let previousPage = page - 1;
-        if (previousPage < 1) previousPage = page + 2;
+        if (previousPage < 1) previousPage = page + 3;
         if (previousPage > totalPages) previousPage = totalPages;
         let nextPage = page + 1;
-        if (nextPage > totalPages) nextPage = page - 2;
+        if (nextPage > totalPages) nextPage = page - 3;
         if (nextPage < 1) nextPage = 1;
         let nextPageBuffer = await getPage(
           pdfBuffer,
