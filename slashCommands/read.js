@@ -35,7 +35,11 @@ module.exports = {
         .setDescription(
           "Select this option if the text is blank or font is mismatched"
         )
-    ),
+    ).addBooleanOption((option)=>
+       option
+         .setName("private")
+         .setDescription("Opens the PDF in your DMs instead of current channel")
+     ),
   async execute(interaction) {
     let page = interaction.options.getInteger("page") || 1,
       password = interaction.options.getString("password"),
@@ -216,11 +220,16 @@ module.exports = {
         .setImage("attachment://Page.png")
         .setFooter({ text: "Used by " + interaction.user.tag });
       try {
-        let message = await interaction.channel.send({
+       let message = interaction.options.getBoolean("private") ? await interaction.user.send ({
+          files: [attachment],
+          embeds: [embed],
+          components: components,
+        }) : await interaction.channel.send({
           files: [attachment],
           embeds: [embed],
           components: components,
         });
+
         await interaction.followUp({
           ephemeral: true,
           content:
