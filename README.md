@@ -1,3 +1,5 @@
+[Invite for already hosted bot](https://discord.com/oauth2/authorize?client_id=955091852695064606&permissions=52224&scope=bot%20applications.commands)
+
 Holy shit this got famous,,, the bot may be offline coz i see some security concerns and i need to rewrite the code, This code will be almost completely rewritten soon
 
 Read PDFs directly on discord. No hassle
